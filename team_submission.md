@@ -1,5 +1,7 @@
-This is a sample of the `team_submission.md` that should accompany your submission.
+Ka Chun Mo franco.mo@mail.utoronto.ca
+Edmund Lo
+Grace Liu
+Boyu Zhu
 
-A slide deck/app (select one) was created, and is available in these files XXX (add links/file names as appropriate).
-
-A video/write-up (select one) was created, and is available in these files XXX (add links/file names as appropriate).
+A slide deck was created, and is available "slides.pdf".
+A write-up was created, and is available "write-up.pdf".
