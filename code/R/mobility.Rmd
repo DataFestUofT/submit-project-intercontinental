@@ -1,0 +1,146 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+```
+
+```{r}
+canada_mobility <- read.csv(file = "https://raw.githubusercontent.com/francomomo/datafest-2020/master/data/cleaned_data/canada_mobility.csv")
+
+provinces_mobility <- read.csv(file = "https://raw.githubusercontent.com/francomomo/datafest-2020/master/data/cleaned_data/canada_provinces_mobility.csv") %>%
+  select(region_1, date,retail_recreation, grocery_pharmacy, parks, transit, workplaces, residential) %>%
+  rename(province = region_1)
+provinces_mobility$date <- as.Date(provinces_mobility$date, format = "%Y-%m-%d")
+
+canada_covid19 <- read.csv(file = "https://raw.githubusercontent.com/francomomo/datafest-2020/master/data/raw_data/covid19_canada.csv")
+```
+
+```{r}
+ provinces_covid19 <- canada_covid19 %>%
+  select(prname, date, numconf, numtoday) %>%
+  rename(province = prname, total = numconf, new = numtoday) %>%
+  filter(date != "03-06-2020")
+provinces_covid19$date <- as.Date(provinces_covid19$date, format = "%d-%m-%Y")
+
+c_covid19 <- provinces_covid19 %>%
+  filter(province == "Canada")
+c_covid19
+
+alberta_covid19 <- provinces_covid19 %>%
+  filter(province == "Alberta")
+bc_covid19 <- provinces_covid19 %>%
+  filter(province == "British Columbia")
+manitoba_covid19 <- provinces_covid19 %>%
+  filter(province == "Manitoba")
+nb_covid19 <- provinces_covid19 %>%
+  filter(province == "New Brunswick")
+nl_covid19 <- provinces_covid19 %>%
+  filter(province == "Newfoundland and Labrador")
+ns_covid19 <- provinces_covid19 %>%
+  filter(province == "Nova Scotia")
+ontario_covid19 <- provinces_covid19 %>%
+  filter(province == "Ontario")
+quebec_covid19 <- provinces_covid19 %>%
+  filter(province == "Quebec")
+saskatchewan_covid19 <- provinces_covid19 %>%
+  filter(province == "Saskatchewan")
+nt_covid19 <- provinces_covid19 %>%
+  filter(province == "Northwest Territories")
+nunavut_covid19 <- provinces_covid19 %>%
+  filter(province == "Nunavut")
+pei_covid19 <- provinces_covid19 %>%
+  filter(province == "Prince Edward Island")
+yukon_covid19 <- provinces_covid19 %>%
+  filter(province == "Yukon")
+
+provinces_covid19 <- rbind(alberta_covid19, bc_covid19, manitoba_covid19, nb_covid19, nl_covid19, ns_covid19, ontario_covid19, quebec_covid19, saskatchewan_covid19, nt_covid19, nunavut_covid19, pei_covid19, yukon_covid19)
+provinces_covid19
+# write.csv(provinces_covid19, 'provinces_covid19.csv')
+```
+
+```{r}
+ggplot(provinces_covid19) +
+  aes(x = date, y = new, colour = province) + 
+  geom_point()
+```
+
+
+
+
+```{r}
+provinces_mobility_and_cases <- merge(provinces_mobility, provinces_covid19, by = c("province", "date"))
+```
+
+```{r}
+provinces <- c("Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Ontario", "Quebec", "Saskatchewan")
+
+for(i in 1:length(provinces)) {
+  temp_plot = ggplot(provinces_mobility_and_cases[provinces_mobility_and_cases$province == provinces[i],])+
+    aes(x = total) +
+    geom_point(aes(y = retail_recreation, colour = "retail_recreation")) +
+    geom_point(aes(y = grocery_pharmacy, colour = "grocery_pharmacy")) +
+    # geom_point(aes(y = parks, colour = "parks")) +
+    # geom_point(aes(y = transit, colour = "transit")) +
+    # geom_point(aes(y = workplaces, colour = "workplaces")) +
+    geom_point(aes(y = residential, colour = "residential")) +
+    ggtitle(provinces[i])
+  print(temp_plot)
+  # ggsave(temp_plot, file=paste0(provinces[i],".png"), width = 14, height = 10, units = "cm")
+}
+
+```
+
+```{r}
+provinces <- c("Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Ontario", "Quebec", "Saskatchewan")
+emergency <- as.Date(c("2020-3-17", "2020-3-18", "2020-3-20", "2020-3-19", "2020-3-18", "2020-3-22", "2020-3-17", "2020-3-13", "2020-3-18"))
+
+provinces_mobility_covid19 <- provinces_mobility_and_cases[FALSE,]
+provinces_mobility_covid19$days_since_emergency <- integer()
+
+for(i in 1: length(provinces)){
+  temp_provinces_mobility <- provinces_mobility_and_cases %>%
+    filter(province == provinces[i]) %>%
+    filter(date >= emergency[i]) %>%
+    mutate(days_since_emergency = 1:length(date))
+  
+  provinces_mobility_covid19 <- rbind(provinces_mobility_covid19, temp_provinces_mobility)
+  
+  temp_plot = ggplot(temp_provinces_mobility)+
+    aes(x = days_since_emergency) +
+    geom_point(aes(y = retail_recreation, colour = "retail_recreation")) +
+    geom_point(aes(y = grocery_pharmacy, colour = "grocery_pharmacy")) +
+    # geom_point(aes(y = parks, colour = "parks")) +
+    # geom_point(aes(y = transit, colour = "transit")) +
+    # geom_point(aes(y = workplaces, colour = "workplaces")) +
+    geom_point(aes(y = residential, colour = "residential")) +
+    ggtitle(provinces[i])
+  print(temp_plot)
+}
+```
+
+```{r}
+provinces_mobility_covid19
+# write.csv(provinces_mobility_covid19, 'provinces_mobility_covid19.csv')
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
