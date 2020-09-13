@@ -1,50 +1,41 @@
-# DataFest@UofT: COVID-19 Virtual Challenge Submission Instructions
+# An Analysis on Canada's social distancing during COVID-19
 
-Congratulations.  If your reading this then your team is :running: to submit to DataFest. Be sure, that **there is only one Github repository per team**.
+1st Place in Best insight, ASA Datafest@UofT
+Team Intercontinental's official repo 
 
-:clock12:  **Submissions are due:** June 14, 2020 at 23:59 EDT.
 
-## What should be submitted to your team's repository?
+## Project Background Story
 
-Each :white_check_mark: below indicates something that your team must include.
+On May 31st, more than two months into nationwide lockdown, my friends and I decided to go to the Harbourfront for a walk. With our face masks on, we were excited to get some fresh air through our stifling N95s. Shockingly, there was a crowd of people by the lake. Most of them were not wearing face masks and they were barely practicing social distancing. We started to wonder why they behaved the way they did and how their behavior connected to the bigger picture in Canada. Thus, this analysis aims to address the question of how active people in Canada are, at practicing social distancing and the driving forces behind their social distancing decisions.
 
-### Slide Deck or Interactive App
 
-:white_check_mark:  EITHER a slide deck (maximum :three: content slides + title slide in pdf format) **OR** an interactive app / dashboard (do not submit both).  If your team submits an interactive app then it should be deployed somewhere such as (shinyapps.io)[https://www.shinyapps.io/] or (heroku.com)[https://www.heroku.com/] so that you can submit the :link: as a url. 
+## Data Sources
 
-:x: do not submit both a slide-deck **AND** an app.
+- Google COVID-19 Community Mobility Reports https://www.google.com/covid19/mobility/
+- Google Trends https://trends.google.com/trends/?geo=CA
+- Canada COVID-19 Cases https://www.canada.ca/en/public-health/services/diseases/2019-novel-coronavirus-infection.html
+- Government of Canada's Weather Data https://climate.weather.gc.ca/historical_data/search_historic_data_e.html
+- Dates of Declaration of States of Emergency https://nationalpost.com/news/provincial-states-of-emergencies-were-issued-a-month-ago-most-are-coming-up-for-renewal
 
-### Video or Write-up
 
-:white_check_mark:  EITHER a :five: minute video or screencast **OR** a :one:-page write up (single spaced) 
+## Key metric
 
-:x: do not submit both a video **AND** a write-up.
+We created a new variable - social distancing score (`s_d_score`)
+`s_d_score` = -1 * (`retail_recreation` + `grocery_pharmacy` + `parks` + `transit` + `workplaces`) + `residential`
 
-### Code
+The reason why we multiply -1 for the categories - `retail_recreation`, `grocery_pharmacy`, `parks`, `transit`, `workplaces` - is because we want to penalize the score when there is an increase in the number of visits of these places since these places are considered as public areas and a spike in the number of visits in these areas indicates that people are doing badly in social distancing in these areas. Whereas, people are encouraged to stay at home during COVID-19. Thus, we do not multiple `residential` by -1.
 
-:white_check_mark:  The code that you developed to create slide deck/app and video/write-up. 
 
-### Data
+## Exploratory Data Analysis
 
-:white_check_mark:  :link: to data source(s) or a file containg the data in your repository. 
+To get a general sense of people’s behavior during COVID-19, we first took a look into the most and least frequent places people visited. Following measures taken in March to stop the spread of COVID-19, people stopped using public transportation and decreased their number of visits to workplaces. They stayed home most of the time with little variation from day to day. However, data showed that people visited parks quite often. There are numerous days where the number of visits to parks surged suddenly. Interestingly, Google trends show a similar pattern in which there is a strong correlation between the number of times people searched for “parks” and the number of times people visited parks.
 
-NB:  [Review Github's file and repository size limitations](https://help.github.com/en/github/managing-large-files/what-is-my-disk-quota#file-and-repository-size-limitations) before storing large data sets in your project's repo. For example, if your project requires a file > 100MB then store the file in another place (e.g., Google Drive, Dropbox) or if it already has a url then read in the file directly using it's :link: :
 
-```
-# R using tidyverse
-library(tidyverse)
-df <- read_csv("https://mydatasource.org/mydata.csv")
-```
+## Modeling
 
-```
-# Python using pandas
-import pandas as pd
-df = pd.read_csv('https://mydatasource.org/mydata.csv')
-```
+We computed the permutation feature importance after fitting a random forests classifier to our data. The mean temperature, new cases, new deaths in Canada are the variables that have the most predictive power. On the other hand, days since the first case, new deaths, and new cases in the world have the least predictive power. To look into the individual effects of the factors, we fitted a multiple linear regression. Mean temperature and new cases in Canada remain significant, while new deaths become less significant. This indicates that as the weather gets warmer and as we enter summer, people want to go out more to bathe in the sun. People are also responsive to the number of new cases and they will act accordingly. Total precipitation is another significant factor. People may decide to stay at home if it is raining outside
 
-### Submission Details `team_submission.md`
 
-:white_check_mark:  Create a file called `team_submission.md` with the following information:
-  + Each team member's name, and UofT email (i.e., yourname@mail.utoronto.ca)
-  + A slide deck/app (select one) was created, and is available XXX (add links/file names as appropriate).
-  + A slide video/write-up (select one) was created, and is available XXX (add links/file names as appropriate).
+## Conclusion
+
+Canada's social distancing is responsive to new cases in Canada, temperature, and precipitation. As we are entering summer, it is our job to practice social distancing when going outside for a walk and the government should constantly remind people to take precautions during the pandemic.
