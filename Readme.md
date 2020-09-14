@@ -22,6 +22,7 @@ On May 31st, more than two months into nationwide lockdown, my friends and I dec
 ## Key metric
 
 We created a new variable - social distancing score (`s_d_score`)
+
 `s_d_score` = -1 * (`retail_recreation` + `grocery_pharmacy` + `parks` + `transit` + `workplaces`) + `residential`
 
 The reason why we multiply -1 for the categories - `retail_recreation`, `grocery_pharmacy`, `parks`, `transit`, `workplaces` - is because we want to penalize the score when there is an increase in the number of visits of these places since these places are considered as public areas and a spike in the number of visits in these areas indicates that people are doing badly in social distancing in these areas. Whereas, people are encouraged to stay at home during COVID-19. Thus, we do not multiple `residential` by -1.
